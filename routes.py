@@ -1,15 +1,10 @@
-import logging
 import timeit
 
-#Create and configure logger
-logging.basicConfig(filename='app.log',
-                    filemode='w',
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    datefmt='%d-%b-%y %H:%M:%S',
-                    level=logging.DEBUG)
+from logconfig import LogConfig
 
-#Creating an object
-logger=logging.getLogger()
+log_config = LogConfig()
+logger = log_config.logger_config()
+
 
 class Routes:
 
@@ -23,15 +18,24 @@ class Routes:
         print(start_time_message)
         logger.info(start_time_message)
 
-        distance = 0
-        for i in range(len(route)):
-            origin_city = route[i]
-            if i + 1 < len(route):
-                next_city = route[i + 1]
-                if next_city in self.graph[origin_city]:
-                    distance += self.graph[origin_city][next_city]
-                else:
-                    return f'NO SUCH ROUTE - {route}'
+        try:
+            distance = 0
+
+            if(len(route)):
+                raise Exception('Route should not be blank.')
+
+
+            for i in range(len(route)):
+                origin_city = route[i]
+                if i + 1 < len(route):
+                    next_city = route[i + 1]
+                    if next_city in self.graph[origin_city]:
+                        distance += self.graph[origin_city][next_city]
+                    else:
+                        logger.warning(f'NO SUCH ROUTE - {route}')
+                        return f'NO SUCH ROUTE - {route}'
+        except Exception as exception:
+            logger.exception(f'Exception occured in calc_distance_btwn_routes({route}): {exception}')
 
         end_time = timeit.default_timer()
         end_time_message = f'calc_distance_btwn_routes({route}): The end time is : {end_time}'
@@ -55,36 +59,27 @@ class Routes:
 
         response = 0
         if origin in self.graph and destination in self.graph:
-
             routes = self.get_diff_routes_from_origin(origin, [], [], [])
-
             for route in routes:
                 if len(route) - 1 <= max_stops:
                     response += 1
-
-            end_time = timeit.default_timer()
-            end_time_message = f'{method_name}: The end time is : {end_time}'
-            print(end_time_message)
-            logger.info(end_time_message)
-
-            time_difference = end_time - start_time
-            time_diff_message = f'{method_name}: The time taken is : {time_difference}'
-            print(time_diff_message)
-            logger.info(time_diff_message)
-            return f'Number of routes between {origin} and {destination} is "{response}" having maximum number of {max_stops} stops.'
-
+            response_message = f'Number of routes between {origin} and {destination} is "{response}" having maximum ' \
+                               f'number of {max_stops} stops. '
         else:
-            end_time = timeit.default_timer()
-            end_time_message = f'{method_name}: The end time is : {end_time}'
-            print(end_time_message)
-            logger.info(end_time_message)
-
-            time_difference = end_time - start_time
-            time_diff_message = f'{method_name}: The time taken is : {time_difference}'
-            print(time_diff_message)
-            logger.info(time_diff_message)
             logger.warning(f'NO SUCH ROUTE FOUND FOR ORIGIN:{origin} and DESTINATION:{destination}')
-            return 'NO SUCH ROUTE'
+            response_message = 'NO SUCH ROUTE'
+
+        end_time = timeit.default_timer()
+        end_time_message = f'{method_name}: The end time is : {end_time}'
+        print(end_time_message)
+        logger.info(end_time_message)
+
+        time_difference = end_time - start_time
+        time_diff_message = f'{method_name}: The time taken is : {time_difference}'
+        print(time_diff_message)
+        logger.info(time_diff_message)
+
+        return response_message
 
     # It finds the different routes between an origin to destination
     def get_diff_routes_from_origin(self, origin, routes=[], single_route=[], visited=[]):
