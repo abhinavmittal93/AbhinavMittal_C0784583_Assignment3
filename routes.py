@@ -21,9 +21,8 @@ class Routes:
         try:
             distance = 0
 
-            if(len(route)):
+            if len(route) == 0:
                 raise Exception('Route should not be blank.')
-
 
             for i in range(len(route)):
                 origin_city = route[i]
@@ -48,25 +47,21 @@ class Routes:
         logger.info(time_diff_message)
         return f'The distance between route: {route} is {distance}'
 
-    # It calculates the number of routes with the number of stops less than the provided in max_stops
-    def calc_stops_btwn_routes(self, origin, destination, max_stops):
-        method_name = f'calc_stops_btwn_routes({origin}, {destination}, {max_stops})'
+    # It calculates the number of routes with the number of stops less than the provided in max_stops between the origin and destination (i.e., origin)
+    def calc_stops_btwn_routes(self, origin, max_stops):
+        method_name = f'calc_stops_btwn_routes({origin}, {max_stops})'
 
         start_time = timeit.default_timer()
         start_time_message = f'{method_name}: The start time is : {start_time}'
         print(start_time_message)
         logger.info(start_time_message)
 
-        response = 0
-        if origin in self.graph and destination in self.graph:
-            routes = self.get_diff_routes_from_origin(origin, [], [], [])
-            for route in routes:
-                if len(route) - 1 <= max_stops:
-                    response += 1
-            response_message = f'Number of routes between {origin} and {destination} is "{response}" having maximum ' \
-                               f'number of {max_stops} stops. '
+        if origin in self.graph:
+            response = self.get_number_stops_btwn_route(max_stops, origin)
+            response_message = f'Number of routes between {origin} and {origin} having maximum ' \
+                               f'number of {max_stops} stops is "{response}". '
         else:
-            logger.warning(f'NO SUCH ROUTE FOUND FOR ORIGIN:{origin} and DESTINATION:{destination}')
+            logger.warning(f'NO SUCH ROUTE FOUND FOR ORIGIN:{origin} and DESTINATION:{origin}')
             response_message = 'NO SUCH ROUTE'
 
         end_time = timeit.default_timer()
@@ -81,7 +76,16 @@ class Routes:
 
         return response_message
 
-    # It finds the different routes between an origin to destination
+    # It returns the number of routes from origin to origin, with stops not more than max_stops
+    def get_number_stops_btwn_route(self, max_stops, origin):
+        response = 0
+        routes = self.get_diff_routes_from_origin(origin, [], [], [])
+        for route in routes:
+            if len(route) - 1 <= max_stops:
+                response += 1
+        return response
+
+    # It finds the different routes starting from an origin to back to origin
     def get_diff_routes_from_origin(self, origin, routes=[], single_route=[], visited=[]):
 
         if origin in self.graph:

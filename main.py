@@ -13,14 +13,14 @@ graph = {
 routes = Routes(graph)
 
 # ----------------------- GROUP A starts --------------------------------------------
-# print(routes.calc_distance_btwn_routes(['A', 'B', 'C']))  # A1
+print(routes.calc_distance_btwn_routes(['A', 'B', 'C']))  # A1
 print(routes.calc_distance_btwn_routes(['A', 'D']))  # A2
 print(routes.calc_distance_btwn_routes([]))  # This will throw an exception as no route is specified.
-# print(routes.calc_distance_btwn_routes(['A', 'D', 'C']))  # A3
-# print(routes.calc_distance_btwn_routes(['A', 'E', 'B', 'C', 'D']))  # A4
-# print(routes.calc_distance_btwn_routes(['A', 'E', 'D']))  # A5
+print(routes.calc_distance_btwn_routes(['A', 'D', 'C']))  # A3
+print(routes.calc_distance_btwn_routes(['A', 'E', 'B', 'C', 'D']))  # A4
+print(routes.calc_distance_btwn_routes(['A', 'E', 'D']))  # A5
 # ----------------------- GROUP A ends --------------------------------------------
 
 
-print(routes.calc_stops_btwn_routes('C', 'C', 3))
-print(routes.calc_stops_btwn_routes('C', 'R', 3)) # This will give a warning as the specified route does not exist
+print(routes.calc_stops_btwn_routes('C', 3))
+print(routes.calc_stops_btwn_routes('R', 3)) # This will give a warning as the specified route does not exist
